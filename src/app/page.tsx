@@ -1,12 +1,9 @@
 "use client";
 import { FormEvent, useState } from "react";
-
-interface Message {
-  content: string;
-  role: "user" | "AI";
-  id: string;
-}
 import { useChat } from "ai/react";
+import ChatContainer from "./components/ChatContainer";
+import PersonalitySelector from "./components/PersonalitySelector";
+import ChatForm from "./components/ChatForm";
 
 export default function Home() {
   const [personality, setPersonality] = useState("pirate");
@@ -14,7 +11,6 @@ export default function Home() {
   const {
     messages,
     input,
-    setInput,
     handleInputChange,
     handleSubmit,
     isLoading,
@@ -29,71 +25,30 @@ export default function Home() {
     },
   });
   const sendMessage = async (e: FormEvent<HTMLFormElement>) => {
-    // e.preventDefault();
     handleSubmit(e);
   };
   const handlePersonalityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPersonality(e.target.value);
-    console.log(e.target.value);
     setMessages([]);
   };
 
   return (
     <div>
-      {messages.length > 0
-        ? [...messages].reverse().map((m, i) => {
-            return (
-              <div key={i}>
-                <div>{m.role === "user" ? "🧑" : "🤖"}:</div>
-                <div>{m.content}</div>
-              </div>
-            );
-          })
-        : ""}
-      <form onSubmit={sendMessage}>
-        <input
-          value={input}
-          onChange={handleInputChange}
-          type="text"
-          placeholder={`Chat with the ${personality}!`}
-        />
-        <button type="submit">
-          <span>{isLoading ? "Loading..." : "Send"}</span>
-        </button>
-        <div >
-          <label>
-            <input
-              type="radio"
-              value="pirate"
-              checked={personality === "pirate"}
-              onChange={handlePersonalityChange}
-            />
-            Pirate
-          </label>
-        </div>
-        <div >
-          <label>
-            <input
-              type="radio"
-              value="lawyer"
-              checked={personality === "lawyer"}
-              onChange={handlePersonalityChange}
-            />
-            Lawyer
-          </label>
-        </div>
-        <div >
-          <label>
-            <input
-              type="radio"
-              value="vampire"
-              checked={personality === "vampire"}
-              onChange={handlePersonalityChange}
-            />
-            Vampire
-          </label>
-        </div>
-      </form>
+      <h1 className="text-2xl p-4">
+        LangChainJS + Next.js - Chat with a character!
+      </h1>
+      <ChatContainer messages={messages} />
+      <ChatForm
+        onChange={handleInputChange}
+        personality={personality}
+        isLoading={isLoading}
+        input={input}
+        onSubmit={sendMessage}
+      />
+      <PersonalitySelector
+        onChange={handlePersonalityChange}
+        personality={personality}
+      />
     </div>
   );
 }
